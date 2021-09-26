@@ -1,6 +1,17 @@
 Run "npm install" before continue!
 
-Run "node server.js"
+database rules
 
-Open http://localhost:4000 in your browser window
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /recipes/{recipe} {
+      allow read: if true
+      allow update, delete: isLoggedIn();
+    }
+  }
+}
 
+function isLoggedIn(){
+	return request.auth != null;
+}
