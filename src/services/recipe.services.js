@@ -6,7 +6,7 @@ class RecipeServices {
     }
     createRecipe = async (recipe) => {
         try {
-            return await this.admin.doc().set(recipe);
+            return await this.admin.doc().set({ recipe });
         } catch (err) {
             throw err;
         }
@@ -32,7 +32,7 @@ class RecipeServices {
                 id: doc.id,
                 ...doc.data(),
             }));
-            return recipesList.filter((doc) => doc.id === id);
+            return await recipesList.filter((doc) => doc.id === id);
         } catch (err) {
             throw err;
         }
@@ -52,36 +52,6 @@ class RecipeServices {
             return this.admin.doc(id).update(recipeBody);
         } catch (err) {
             throw err;
-        }
-    };
-    updateLikes = async (find) => {
-        try {
-            const snapShot = await this.admin.get();
-            const recipesList = snapShot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-            }));
-            const recipe = recipesList.filter((doc) => doc.id === find)[0];
-            recipe.recipe.likesCounter += 1;
-            const { id } = recipe;
-            delete recipe.id;
-            return await this.admin.doc(id).update(recipe);
-        } catch (err) {
-            throw err;
-        }
-    };
-
-    allUserRecipes = async (id) => {
-        try {
-            const snapShot = await this.admin.get();
-            const recipesList = snapShot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-            }));
-            const userRecipe = recipesList.filter((doc) => doc.createBy === id);
-            return userRecipe;
-        } catch (err) {
-            console.log(err);
         }
     };
 }

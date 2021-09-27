@@ -14,12 +14,12 @@ class UserServices {
                 ...doc.data(),
             }));
             const userExists = list.some((doc) => {
-                return doc.username === userData.username;
+                return doc.userName === userData.userName;
             });
             if (userExists)
                 return {
                     status: 'Failed',
-                    message: 'User-name already exists',
+                    message: 'User exists',
                 };
             return this.admin.doc().set(userData);
         } catch (err) {
@@ -27,7 +27,7 @@ class UserServices {
         }
     };
 
-    signIn = async (username, password) => {
+    signIn = async (userName, password) => {
         try {
             const snapShot = await this.admin.get();
             const list = snapShot.docs.map((doc) => ({
@@ -35,13 +35,15 @@ class UserServices {
                 ...doc.data(),
             }));
             const userExists = list.some((doc) => {
-                return doc.username === username;
+                return doc.userName === userName;
             });
-            if (userExists === false) {
-                return 'failed';
-            }
+            if (!userExists)
+                return {
+                    status: 'Failed',
+                    message: 'This User does not exist',
+                };
             const user = list.filter(
-                (doc) => doc.username === username && doc.password === password
+                (doc) => doc.userName === userName && doc.password === password
             );
             const payload = {
                 user_Id: user.id,
@@ -55,6 +57,7 @@ class UserServices {
     };
 
     logOut = async (id) => {
+        console.log('LOGGED');
         try {
             const snapShot = await this.admin.get();
             const list = snapShot.docs.map((doc) => ({
@@ -66,21 +69,6 @@ class UserServices {
                 user_Id: user.id,
             };
             user.token = await signToken(payload, '1s');
-            delete user.password;
-            return user;
-        } catch (err) {
-            throw err;
-        }
-    };
-
-    getUser = async (id) => {
-        try {
-            const snapShot = await this.admin.get();
-            const list = snapShot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-            }));
-            const user = list.filter((doc) => doc.id === id);
             delete user.password;
             return user;
         } catch (err) {

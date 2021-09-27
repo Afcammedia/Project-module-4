@@ -4,11 +4,9 @@ const {
     signupController,
     signInController,
     logOutController,
-    getOneUser,
 } = require('../controllers/users.controller');
 
-router.post('/', signupController);
-router.post('/login', signInController);
-router.post('/:id', logOutController).get('/:id', getOneUser);
+router.post('/', signupController).get('/', signInController);
+router.post('/:id', logOutController);
 
 module.exports = router;

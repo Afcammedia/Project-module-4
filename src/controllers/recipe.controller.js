@@ -1,14 +1,16 @@
 const RecipeServices = require('../services/recipe.services');
 const recipeServices = new RecipeServices();
 
-const createRecipe = async (req, res, next) => {
+const createRecipe = (req, res, next) => {
     const {
         meal,
         ingredients,
         prepMethod,
         description,
         category,
-        foodImageURL,
+        foodImageUrl,
+        categoryImageUrl,
+        likesCounter,
         createBy,
     } = req.body;
     const recipe = {
@@ -17,12 +19,12 @@ const createRecipe = async (req, res, next) => {
         prepMethod,
         description,
         category,
-        foodImageURL,
+        foodImageUrl,
+        categoryImageUrl,
+        likesCounter,
         createBy,
     };
-    recipe.likesCounter = 0;
-    const newRecipe = await recipeServices.createRecipe(recipe);
-    console.log(newRecipe);
+    const newRecipe = recipeServices.createRecipe(recipe);
     res.status(201).json({
         status: 'success',
         message: 'New Recipe created successfully',
@@ -32,6 +34,7 @@ const createRecipe = async (req, res, next) => {
 const getAllRecipes = async (req, res, next) => {
     try {
         const allRecipes = await recipeServices.getAllRecipes();
+        console.log(allRecipes);
         res.status(200).json({
             status: 'success',
             data: allRecipes,
@@ -51,7 +54,7 @@ const getOneRecipe = async (req, res, next) => {
     }
     return res.status(200).json({
         status: 'success',
-        data: recipe[0],
+        data: recipe,
     });
 };
 
@@ -66,51 +69,11 @@ const deleteRecipe = async (req, res, next) => {
 };
 
 const updateRecipe = async (req, res, next) => {
-    const { createBy, userId, id } = req.body;
-    if (createBy === userId) {
-        try {
-            const update = await recipeServices.updateRecipe(id, req.body);
-            return res.status(200).json({
-                status: 'success',
-                message: 'Recipe updated successfully',
-                data: update,
-            });
-        } catch (err) {
-            throw err;
-        }
-    } else if (createBy !== userId) {
-        return res.status(401).json({
-            status: 'failed',
-            message: 'Invalid Update credentials',
-        });
-    }
+    const { id } = req.body;
+    // TODO: Only user who created can edit a recipe
 };
 
 const updateLikes = async (req, res, next) => {
-    const id = req.params.id;
-    try {
-        const update = await recipeServices.updateLikes(id);
-        return res.status(200).json({
-            status: 'success',
-            message: 'Recipe updated successfully',
-            data: update,
-        });
-    } catch (err) {
-        throw err;
-    }
+    // TODO: add a controller to update likes in a recipe
 };
-
-const allUserRecipe = async (req, res, next) => {
-    const id = req.params.id;
-    const recipes = await recipeServices.allUserRecipes(id);
-    res.send(recipes);
-};
-module.exports = {
-    createRecipe,
-    getAllRecipes,
-    getOneRecipe,
-    deleteRecipe,
-    updateLikes,
-    updateRecipe,
-    allUserRecipe,
-};
+module.exports = { createRecipe, getAllRecipes, getOneRecipe, deleteRecipe };
