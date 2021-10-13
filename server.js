@@ -10,6 +10,7 @@ const RecipeServices = require('./src/services/recipe.services');
 const recipeServices = new RecipeServices();
 const UserServices = require('./src/services/user.services');
 const userServices = new UserServices();
+require("dotenv").config()
 
 app.use(express.static(__dirname + '/public'));
 app.use(express.json());
@@ -86,9 +87,7 @@ app.get('/recipes-page/:slug', async (req, res) => {
     try {
         const user = await userServices.getUser(id);
         const recipes = await recipeServices.getAllRecipes();
-        const allRecipes = recipes.map(
-            (recipes) => (recipes.loggedInUser = user[0].id)
-        );
+        recipes.map((recipes) => (recipes.loggedInUser = user[0].id));
         res.render('all-recipes', {
             layout: 'index',
             data: user[0],
@@ -145,7 +144,6 @@ app.get('/recipe-details/', async (req, res) => {
 app.get('/create-recipe/:slug', async (req, res) => {
     const id = req.params.slug;
     try {
-        console.log(id);
         const user = await userServices.getUser(id);
         res.render('create-recipe', { layout: 'index', user: user[0] });
     } catch (err) {
