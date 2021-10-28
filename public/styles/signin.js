@@ -20,7 +20,7 @@ submit.addEventListener("click", async (e) => {
 		if (data.status === "Success") {
 			const user = data.user[0];
 			alertMessage(successBox, "success-message", "User logged in");
-			// window.location.replace(`/recipes-page/${user.id}`);
+			window.location.replace(`/recipes-page/${user.id}`);
 		} else {
 			alertMessage(
 				errorBox,
